@@ -5,11 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jogo da Memória</title>
     <style>
+        /* Estilo geral da página */
         body { font-family: Arial, sans-serif; text-align: center; }
-        .game-board { display: grid; grid-template-columns: repeat(4, 100px); gap: 10px; justify-content: center; }
-        .card { width: 100px; height: 100px; background: #eee; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); overflow: hidden; }
-        .card img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
-        .hidden { visibility: hidden; }
+
+        /* Tabuleiro do jogo */
+        .game-board { 
+            display: grid; 
+            grid-template-columns: repeat(4, 100px); 
+            gap: 10px; 
+            justify-content: center; 
+        }
+
+        /* Estilo das cartas */
+        .card { 
+            width: 100px; 
+            height: 100px; 
+            background: #eee; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            position: relative; 
+            border-radius: 8px; 
+            box-shadow: 0 0 5px rgba(0,0,0,0.1); 
+            overflow: hidden; 
+        }
+
+        /* Imagem da carta */
+        .card img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            border-radius: 8px; 
+        }
+
+        /* Carta escondida (quando o par é feito) */
+        .hidden { 
+            visibility: hidden; 
+        }
     </style>
 </head>
 <body>
@@ -19,9 +52,10 @@
     <p><a href="/logout">Sair</a> | <a href="/historico.html">Ver Histórico</a></p>
 
     <script>
+        // Lista de imagens fixas com seus respectivos IDs
         const images = [
-            { id: 'img1', src: 'cao1.jpeg' },
-            { id: 'img2', src: 'cao2.jpeg' },
+            { id: 'img1', src: 'img/img1.jpg' },
+            { id: 'img2', src: 'img/img2.jpg' },
             { id: 'img3', src: 'img/img3.jpg' },
             { id: 'img4', src: 'img/img4.jpg' },
             { id: 'img5', src: 'img/img5.jpg' },
@@ -30,21 +64,27 @@
             { id: 'img8', src: 'img/img8.jpg' }
         ];
 
+        // Variáveis de controle do jogo
         let cards = [];
         let selectedCards = [];
         let matchedCards = [];
         let timeLeft = 60;
         let timerInterval;
 
+        // Função para embaralhar um array
         function shuffle(array) {
             return array.sort(() => Math.random() - 0.5);
         }
 
+        // Cria o tabuleiro do jogo
         function createBoard() {
             const board = document.getElementById("gameBoard");
             board.innerHTML = "";
+
+            // Duplica as imagens e embaralha
             cards = shuffle([...images, ...images]);
 
+            // Cria cada carta do jogo
             cards.forEach((imgObj, index) => {
                 const card = document.createElement("div");
                 card.classList.add("card");
@@ -60,21 +100,27 @@
                 board.appendChild(card);
             });
 
+            // Inicia o temporizador
             startTimer();
         }
 
+        // Função chamada ao clicar em uma carta
         function flipCard(card) {
+            // Ignora se a carta é inválida, já selecionada ou já foi encontrada
             if (!card || selectedCards.includes(card) || card.classList.contains("hidden")) return;
 
+            // Adiciona carta ao array de seleção
             if (selectedCards.length < 2) {
                 selectedCards.push(card);
             }
 
+            // Verifica combinação após 2 cartas clicadas
             if (selectedCards.length === 2) {
                 setTimeout(checkMatch, 500);
             }
         }
 
+        // Verifica se as duas cartas selecionadas são um par
         function checkMatch() {
             const [card1, card2] = selectedCards;
             if (card1 && card2 && card1.dataset.id === card2.dataset.id) {
@@ -82,15 +128,18 @@
                 card2.classList.add("hidden");
                 matchedCards.push(card1.dataset.id);
 
+                // Verifica se o jogador encontrou todos os pares
                 if (matchedCards.length === images.length) {
                     clearInterval(timerInterval);
                     alert("Parabéns! Você encontrou todos os pares.");
                     salvarHistorico();
                 }
             }
+            // Limpa seleção de cartas
             selectedCards = [];
         }
 
+        // Inicia o temporizador do jogo
         function startTimer() {
             timerInterval = setInterval(() => {
                 if (timeLeft > 0) {
@@ -105,6 +154,7 @@
             }, 1000);
         }
 
+        // Envia o histórico do resultado para o servidor
         function salvarHistorico(vitoria = true) {
             fetch('/historico', {
                 method: 'POST',
@@ -118,6 +168,7 @@
             .then(msg => console.log(msg));
         }
 
+        // Inicia o jogo quando a página estiver carregada
         document.addEventListener("DOMContentLoaded", createBoard);
     </script>
 </body>
