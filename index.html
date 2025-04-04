@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="pt">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jogo da Memória</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; }
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
 
         .game-board {
             display: grid;
@@ -24,7 +28,7 @@
             justify-content: center;
             cursor: pointer;
             border-radius: 8px;
-            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             position: relative;
         }
@@ -49,6 +53,7 @@
         }
     </style>
 </head>
+
 <body>
     <h1>Jogo da Memória</h1>
     <p>Tempo restante: <span id="timer">60</span> segundos</p>
@@ -109,9 +114,10 @@
                 gameCards.push(card);
             });
 
-            // Mostrar todas por 5 segundos
+            // Mostrar todas as cartas por 5 segundos, depois esconder e iniciar o jogo
             setTimeout(() => {
                 gameCards.forEach(card => card.classList.remove("revealed"));
+                startTimer();
             }, 5000);
         }
 
@@ -172,7 +178,6 @@
             document.getElementById("gameBoard").style.display = "grid";
             clearInterval(timerInterval);
             createBoard();
-            startTimer();
         }
 
         function toggleMusic() {
@@ -192,8 +197,9 @@
 
         document.addEventListener("DOMContentLoaded", () => {
             createBoard();
-            startTimer();
+            // startTimer(); <-- agora inicia só após 5 segundos
         });
     </script>
 </body>
+
 </html>
