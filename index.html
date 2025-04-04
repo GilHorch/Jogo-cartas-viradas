@@ -1,16 +1,14 @@
 <!DOCTYPE html>
 <html lang="pt">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jogo da Memória</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-        }
+        /* Estilo do corpo da página */
+        body { font-family: Arial, sans-serif; text-align: center; }
 
+        /* Estilo do tabuleiro de jogo como grid */
         .game-board {
             display: grid;
             grid-template-columns: repeat(4, 100px);
@@ -19,6 +17,7 @@
             margin-top: 20px;
         }
 
+        /* Estilo das cartas */
         .card {
             width: 100px;
             height: 100px;
@@ -28,23 +27,26 @@
             justify-content: center;
             cursor: pointer;
             border-radius: 8px;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
             overflow: hidden;
             position: relative;
         }
 
+        /* Imagem dentro da carta */
         .card img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             border-radius: 8px;
-            display: none;
+            display: none; /* Começa escondida */
         }
 
+        /* Quando a carta estiver virada, mostra a imagem */
         .card.revealed img {
             display: block;
         }
 
+        /* Tela final após término do jogo */
         .final-screen {
             display: none;
             flex-direction: column;
@@ -53,20 +55,22 @@
         }
     </style>
 </head>
-
 <body>
     <h1>Jogo da Memória</h1>
     <p>Tempo restante: <span id="timer">60</span> segundos</p>
     <p>Pontuação: <span id="score">0</span></p>
 
+    <!-- Botão para ativar/desativar música de fundo -->
     <button id="musicButton" onclick="toggleMusic()">🎵 Tocar música</button>
     <audio id="bgMusic" loop>
         <source src="audio/musica1.mp3" type="audio/mpeg">
         Seu navegador não suporta áudio HTML5.
     </audio>
 
+    <!-- Tabuleiro do jogo -->
     <div class="game-board" id="gameBoard"></div>
 
+    <!-- Tela exibida ao final do jogo -->
     <div class="final-screen" id="finalScreen">
         <h2>Fim de Jogo!</h2>
         <p>Sua pontuação final foi: <span id="finalScore"></span></p>
@@ -74,14 +78,16 @@
     </div>
 
     <script>
+        // Lista de imagens do jogo
         const images = [
-            { id: 'img1', src: 'cao1.jpeg' },
-            { id: 'img2', src: 'cao2.jpeg' },
-            { id: 'img3', src: 'cao3.jpeg' },
-            { id: 'img4', src: 'cao4.jpeg' },
-            { id: 'img5', src: 'cao5.jpeg' }
+            { id: 'img1', src: 'img/img1.jpg' },
+            { id: 'img2', src: 'img/img2.jpg' },
+            { id: 'img3', src: 'img/img3.jpg' },
+            { id: 'img4', src: 'img/img4.jpg' },
+            { id: 'img5', src: 'img/img5.jpg' }
         ];
 
+        // Variáveis de controle
         let gameCards = [];
         let selectedCard = null;
         let timeLeft = 60;
@@ -89,10 +95,12 @@
         let timerInterval;
         let musicPlaying = false;
 
+        // Função para embaralhar array
         function shuffle(array) {
             return array.sort(() => Math.random() - 0.5);
         }
 
+        // Cria o tabuleiro e mostra cartas por 5s
         function createBoard() {
             const board = document.getElementById("gameBoard");
             board.innerHTML = "";
@@ -100,9 +108,10 @@
             const pairImages = shuffle([...images, ...images]);
             gameCards = [];
 
+            // Cria cada carta
             pairImages.forEach((imgObj) => {
                 const card = document.createElement("div");
-                card.classList.add("card", "revealed");
+                card.classList.add("card", "revealed"); // inicialmente virada
                 card.dataset.id = imgObj.id;
 
                 const img = document.createElement("img");
@@ -114,21 +123,23 @@
                 gameCards.push(card);
             });
 
-            // Mostrar todas as cartas por 5 segundos, depois esconder e iniciar o jogo
+            // Aguarda 5s, esconde as cartas e inicia o jogo
             setTimeout(() => {
                 gameCards.forEach(card => card.classList.remove("revealed"));
                 startTimer();
             }, 5000);
         }
 
+        // Função de virar uma carta ao clicar
         function flipCard(card) {
             if (card.classList.contains("revealed") || card.matched) return;
 
             card.classList.add("revealed");
 
             if (!selectedCard) {
-                selectedCard = card;
+                selectedCard = card; // primeira carta selecionada
             } else {
+                // Verifica se é um par
                 if (selectedCard.dataset.id === card.dataset.id) {
                     selectedCard.matched = true;
                     card.matched = true;
@@ -136,10 +147,12 @@
                     document.getElementById("score").textContent = score;
                     selectedCard = null;
 
+                    // Verifica se todas as cartas foram combinadas
                     if (gameCards.every(c => c.matched)) {
                         endGame();
                     }
                 } else {
+                    // Se errar, vira ambas as cartas após 1s
                     score -= 2;
                     document.getElementById("score").textContent = score;
                     setTimeout(() => {
@@ -151,6 +164,7 @@
             }
         }
 
+        // Inicia o cronômetro do jogo
         function startTimer() {
             timerInterval = setInterval(() => {
                 if (timeLeft > 0) {
@@ -163,12 +177,14 @@
             }, 1000);
         }
 
+        // Finaliza o jogo, mostra tela final
         function endGame() {
             document.getElementById("gameBoard").style.display = "none";
             document.getElementById("finalScreen").style.display = "flex";
             document.getElementById("finalScore").textContent = score;
         }
 
+        // Reinicia o jogo
         function restartGame() {
             score = 0;
             timeLeft = 60;
@@ -180,6 +196,7 @@
             createBoard();
         }
 
+        // Alterna música de fundo
         function toggleMusic() {
             const music = document.getElementById("bgMusic");
             const button = document.getElementById("musicButton");
@@ -195,11 +212,10 @@
             }
         }
 
+        // Inicia o jogo ao carregar a página
         document.addEventListener("DOMContentLoaded", () => {
-            createBoard();
-            // startTimer(); <-- agora inicia só após 5 segundos
+            createBoard(); // cria tabuleiro e espera 5s antes de iniciar timer
         });
     </script>
 </body>
-
 </html>
