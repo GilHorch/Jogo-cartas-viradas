@@ -19,7 +19,6 @@
     <p><a href="/logout">Sair</a> | <a href="/historico.html">Ver Histórico</a></p>
 
     <script>
-        // Lista fixa de imagens com IDs únicos
         const images = [
             { id: 'img1', src: 'img/img1.jpg' },
             { id: 'img2', src: 'img/img2.jpg' },
@@ -31,21 +30,20 @@
             { id: 'img8', src: 'img/img8.jpg' }
         ];
 
-        let cards = shuffle([...images, ...images]);
+        let cards = [];
         let selectedCards = [];
         let matchedCards = [];
         let timeLeft = 60;
         let timerInterval;
 
-        // Embaralha as cartas
         function shuffle(array) {
             return array.sort(() => Math.random() - 0.5);
         }
 
-        // Cria o tabuleiro com todas as cartas visíveis desde o início
         function createBoard() {
             const board = document.getElementById("gameBoard");
             board.innerHTML = "";
+            cards = shuffle([...images, ...images]);
 
             cards.forEach((imgObj, index) => {
                 const card = document.createElement("div");
@@ -58,17 +56,18 @@
                 frontImage.classList.add("front");
 
                 card.appendChild(frontImage);
-                card.addEventListener("click", flipCard);
+                card.addEventListener("click", () => flipCard(card));
                 board.appendChild(card);
             });
 
             startTimer();
         }
 
-        // Lógica de clique na carta
-        function flipCard() {
-            if (selectedCards.length < 2 && !selectedCards.includes(this)) {
-                selectedCards.push(this);
+        function flipCard(card) {
+            if (!card || selectedCards.includes(card) || card.classList.contains("hidden")) return;
+
+            if (selectedCards.length < 2) {
+                selectedCards.push(card);
             }
 
             if (selectedCards.length === 2) {
@@ -76,10 +75,9 @@
             }
         }
 
-        // Verifica se houve combinação
         function checkMatch() {
             const [card1, card2] = selectedCards;
-            if (card1.dataset.id === card2.dataset.id) {
+            if (card1 && card2 && card1.dataset.id === card2.dataset.id) {
                 card1.classList.add("hidden");
                 card2.classList.add("hidden");
                 matchedCards.push(card1.dataset.id);
@@ -90,11 +88,9 @@
                     salvarHistorico();
                 }
             }
-
             selectedCards = [];
         }
 
-        // Temporizador regressivo
         function startTimer() {
             timerInterval = setInterval(() => {
                 if (timeLeft > 0) {
@@ -109,7 +105,6 @@
             }, 1000);
         }
 
-        // Salva resultado no servidor
         function salvarHistorico(vitoria = true) {
             fetch('/historico', {
                 method: 'POST',
@@ -123,8 +118,7 @@
             .then(msg => console.log(msg));
         }
 
-        // Inicia o jogo
-        createBoard();
+        document.addEventListener("DOMContentLoaded", createBoard);
     </script>
 </body>
 </html>
