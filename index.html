@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo da Memória</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .game-board { display: grid; grid-template-columns: repeat(4, 100px); gap: 10px; justify-content: center; }
+        .card { width: 100px; height: 100px; background: #eee; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); overflow: hidden; }
+        .card img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+        .hidden { visibility: hidden; }
+    </style>
+</head>
+<body>
+    <h1>Jogo da Memória</h1>
+    <p>Tempo restante: <span id="timer">60</span> segundos</p>
+    <div class="game-board" id="gameBoard"></div>
+    <p><a href="/logout">Sair</a> | <a href="/historico.html">Ver Histórico</a></p>
+
+    <script>
+        // Lista fixa de imagens com IDs únicos
+        const images = [
+            { id: 'img1', src: 'img/img1.jpg' },
+            { id: 'img2', src: 'img/img2.jpg' },
+            { id: 'img3', src: 'img/img3.jpg' },
+            { id: 'img4', src: 'img/img4.jpg' },
+            { id: 'img5', src: 'img/img5.jpg' },
+            { id: 'img6', src: 'img/img6.jpg' },
+            { id: 'img7', src: 'img/img7.jpg' },
+            { id: 'img8', src: 'img/img8.jpg' }
+        ];
+
+        let cards = shuffle([...images, ...images]);
+        let selectedCards = [];
+        let matchedCards = [];
+        let timeLeft = 60;
+        let timerInterval;
+
+        // Embaralha as cartas
+        function shuffle(array) {
+            return array.sort(() => Math.random() - 0.5);
+        }
+
+        // Cria o tabuleiro com todas as cartas visíveis desde o início
+        function createBoard() {
+            const board = document.getElementById("gameBoard");
+            board.innerHTML = "";
+
+            cards.forEach((imgObj, index) => {
+                const card = document.createElement("div");
+                card.classList.add("card");
+                card.dataset.id = imgObj.id;
+                card.dataset.index = index;
+
+                const frontImage = document.createElement("img");
+                frontImage.src = imgObj.src;
+                frontImage.classList.add("front");
+
+                card.appendChild(frontImage);
+                card.addEventListener("click", flipCard);
+                board.appendChild(card);
+            });
+
+            startTimer();
+        }
+
+        // Lógica de clique na carta
+        function flipCard() {
+            if (selectedCards.length < 2 && !selectedCards.includes(this)) {
+                selectedCards.push(this);
+            }
+
+            if (selectedCards.length === 2) {
+                setTimeout(checkMatch, 500);
+            }
+        }
+
+        // Verifica se houve combinação
+        function checkMatch() {
+            const [card1, card2] = selectedCards;
+            if (card1.dataset.id === card2.dataset.id) {
+                card1.classList.add("hidden");
+                card2.classList.add("hidden");
+                matchedCards.push(card1.dataset.id);
+
+                if (matchedCards.length === images.length) {
+                    clearInterval(timerInterval);
+                    alert("Parabéns! Você encontrou todos os pares.");
+                    salvarHistorico();
+                }
+            }
+
+            selectedCards = [];
+        }
+
+        // Temporizador regressivo
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    document.getElementById("timer").textContent = timeLeft;
+                } else {
+                    clearInterval(timerInterval);
+                    alert("Tempo esgotado! Tente novamente.");
+                    salvarHistorico(false);
+                    location.reload();
+                }
+            }, 1000);
+        }
+
+        // Salva resultado no servidor
+        function salvarHistorico(vitoria = true) {
+            fetch('/historico', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    tempoRestante: timeLeft,
+                    resultado: vitoria ? 'Vitória' : 'Derrota'
+                })
+            })
+            .then(res => res.text())
+            .then(msg => console.log(msg));
+        }
+
+        // Inicia o jogo
+        createBoard();
+    </script>
+</body>
+</html>
