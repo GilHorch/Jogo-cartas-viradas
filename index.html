@@ -11,7 +11,7 @@
         /* Estilo do tabuleiro de jogo como grid */
         .game-board {
             display: grid;
-            grid-template-columns: repeat(4, 100px);
+            grid-template-columns: repeat(7, 100px);
             gap: 10px;
             justify-content: center;
             margin-top: 20px;
@@ -78,13 +78,31 @@
     </div>
 
     <script>
-        // Lista de imagens do jogo
-        const images = [
-            { id: 'img1', src: 'img/img1.jpg' },
-            { id: 'img2', src: 'img/img2.jpg' },
-            { id: 'img3', src: 'img/img3.jpg' },
-            { id: 'img4', src: 'img/img4.jpg' },
-            { id: 'img5', src: 'img/img5.jpg' }
+        
+        // Lista de imagens com IDs fixos
+        const imagesA = [
+            { id: "1", src: "1.png" },
+            { id: "2", src: "3.png" },
+            { id: "3", src: "5.png" },
+            { id: "4", src: "7.png" },
+            { id: "5", src: "9.png" },
+            { id: "6", src: "11.png" },
+            { id: "7", src: "13.png" },
+            { id: "8", src: "15.png" },
+            { id: "9", src: "17.png" },
+            { id: "10", src: "19.png" }
+        ];
+        const imagesB = [
+            { id: "1", src: "2.png" },
+            { id: "2", src: "4.png" },
+            { id: "3", src: "6.png" },
+            { id: "4", src: "8.png" },
+            { id: "5", src: "10.png" },
+            { id: "6", src: "12.png" },
+            { id: "7", src: "14.png" },
+            { id: "8", src: "16.png" },
+            { id: "9", src: "18.png" },
+            { id: "10", src: "20.png" }
         ];
 
         // Variáveis de controle
@@ -105,7 +123,7 @@
             const board = document.getElementById("gameBoard");
             board.innerHTML = "";
 
-            const pairImages = shuffle([...images, ...images]);
+            const pairImages = shuffle([...imagesA, ...imagesB]);
             gameCards = [];
 
             // Cria cada carta
