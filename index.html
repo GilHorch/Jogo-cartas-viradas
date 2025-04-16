@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html lang="pt">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jogo da Memória</title>
     <style>
         /* Estilo do corpo da página */
-        body { font-family: Arial, sans-serif; text-align: center; }
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
 
         /* Estilo do tabuleiro de jogo como grid */
         .game-board {
@@ -15,7 +19,10 @@
             gap: 10px;
             justify-content: center;
             margin-top: 20px;
+            margin-left: 20px;
+            margin-right: 20px;
         }
+
 
         /* Estilo das cartas */
         .card {
@@ -27,7 +34,7 @@
             justify-content: center;
             cursor: pointer;
             border-radius: 8px;
-            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             position: relative;
         }
@@ -38,7 +45,8 @@
             height: 100%;
             object-fit: cover;
             border-radius: 8px;
-            display: none; /* Começa escondida */
+            display: none;
+            /* Começa escondida */
         }
 
         /* Quando a carta estiver virada, mostra a imagem */
@@ -55,6 +63,7 @@
         }
     </style>
 </head>
+
 <body>
     <h1>Jogo da Memória</h1>
     <p>Tempo restante: <span id="timer">60</span> segundos</p>
@@ -78,7 +87,7 @@
     </div>
 
     <script>
-        
+
         // Lista de imagens com IDs fixos
         const imagesA = [
             { id: "1", src: "1.png" },
@@ -236,4 +245,5 @@
         });
     </script>
 </body>
+
 </html>
