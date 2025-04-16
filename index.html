@@ -14,8 +14,9 @@
 
         /* Estilo do tabuleiro de jogo como grid */
         .game-board {
-            display: grid;
-            grid-template-columns: repeat(7, 200px);
+            display: grid;   
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;/* sete colunas iguais */
+            grid-template-rows: auto auto auto; /* cria tres linhas que ajusta à tela*/
             gap: 10px;
             justify-content: center;
             margin-top: 20px;
